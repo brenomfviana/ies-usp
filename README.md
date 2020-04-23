@@ -1,4 +1,4 @@
-# Exercises solutions of IEA course
+# Exercises solutions of IES course
 
 ## Description
 
