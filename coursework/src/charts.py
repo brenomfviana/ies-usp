@@ -52,6 +52,7 @@ def results(results_sga, results_cga, population_size, goal, noe, filename):
   plt.xlabel('Execuções')
   plt.ylabel('Fitness')
   plt.savefig(RESULT_PATH + '/' + filename + '.png')
+  plt.close('all')
 
 def heat_map(hmsga, hmcga, filename, i):
   # Create result folders
@@ -117,3 +118,4 @@ def heat_map(hmsga, hmcga, filename, i):
   heatmap = axis.pcolor(hmcga['f'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Reds)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
   plt.savefig(foldername + '/' + str(i) + '_cga_c' + '.png')
+  plt.close('all')
