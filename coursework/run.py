@@ -9,9 +9,9 @@ problems = [
   # Binary
   # 'onemax', 'trap5', 'invtrap5',
   # Real
-  # 'sphere', 'rosen',
+  'sphere', 'rosen',
   # Multi binary
-  'multibi',
+  # 'multibi',
   # Multi real
   # 'multirn'
 ]

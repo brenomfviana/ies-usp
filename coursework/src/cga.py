@@ -136,7 +136,7 @@ def rn_run(self, hmdata, maximise=False, multi=False):
   #
   # Initialize probability vector
   model_size = len(self.seed_data)
-  prob = rn_generate_prob(int(model_size * 0.1), model_size)
+  prob = rn_generate_prob(int(model_size * 0.05), model_size)
   #
   # Run `i` generations
   for i in range(self.generations):

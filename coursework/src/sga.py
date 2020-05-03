@@ -121,7 +121,7 @@ def rn_mutate_function(individual):
   individual[mutate_index] = random.uniform(d - mrange, d + mrange)
 
 # Fix population fitness calculation
-def rn_calculate_population_fitness(self):
+def rn_calculate_population_fitness(self, multi=False):
   if multi:
     f_a, f_b = self.fitness_function
     for individual in self.current_generation:
