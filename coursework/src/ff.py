@@ -3,7 +3,7 @@ This module contains fitness functions.
 """
 import numpy as np
 
-ERR = 10e-10
+ERR = 10e-5
 
 def onemax(array, data=None):
   return sum(array)

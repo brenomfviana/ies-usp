@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
+
 """
 This module redirects the function call according to the problem to be solved.
 """
-#!/usr/bin/env python3
+
 import sys
 from src import ga, ff
 
@@ -21,10 +23,12 @@ def run(problem, problem_size, population_size, noe):
   if problem == 'rosen':
     ga.mono_real(ff.rosen, ff.rosen_goal,
       problem_size, population_size, noe)
-  # if problem == 'multibi':
-  #   ff.trap5, ff.invtrap5
-  # if problem == 'multirn':
-  #   ff.sphere, ff.rosen
+  if problem == 'multibi':
+    ga.multi_binary((ff.trap5, ff.invtrap5), (ff.trap5_goal, ff.invtrap5_goal),
+      problem_size, population_size, noe)
+  if problem == 'multirn':
+    ga.multi_real((ff.sphere, ff.rosen), (ff.sphere_goal, ff.rosen_goal),
+      problem_size, population_size, noe)
 
 if __name__ == '__main__':
   problem = sys.argv[1]

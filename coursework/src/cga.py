@@ -8,7 +8,7 @@ from .ff import ERR
 from . import sort, utils
 
 # Run cGA for binary problems
-def runb(self, hmdata, maximise=True, multi=False):
+def bn_run(self, hmdata, maximise=True, multi=False):
   # Initialize probability vector
   prob = [0.5] * len(self.seed_data)
   # Initialize best solution
@@ -24,17 +24,25 @@ def runb(self, hmdata, maximise=True, multi=False):
     b = self.create_individual(prob)
     #
     # Calculate fitness for each individual
-    a.fitness = self.fitness_function(a.genes)
-    b.fitness = self.fitness_function(b.genes)
-    population.append(a)
-    population.append(b)
+    if multi:
+      f_a, f_b = self.fitness_function
+      a.fitness = f_a(a.genes), f_b(a.genes)
+      b.fitness = f_a(b.genes), f_b(b.genes)
+    else:
+      a.fitness = self.fitness_function(a.genes)
+      b.fitness = self.fitness_function(b.genes)
     #
     # Update best individuals population
+    population.append(a)
+    population.append(b)
     population.sort(key=sort.get_key, reverse=maximise)
     population = population[:self.population_size]
     #
     # Get the best and worst individual
-    winner, loser = bn_compete(a, b)
+    if multi:
+      winner, loser = multi_compete(a, b, maximise)
+    else:
+      winner, loser = mono_compete(a, b, maximise)
     # Update best solution
     if best:
       if winner.fitness > best.fitness:
@@ -85,15 +93,38 @@ def bn_create_individual(prob):
   return pyeasyga.Chromosome(individual)
 
 # Make competition between two individuals (for monobjective approach)
-def bn_compete(a, b):
-  if a.fitness > b.fitness:
-    return a, b
+def mono_compete(a, b, maximise=False):
+  if maximise:
+    if a.fitness > b.fitness:
+      return a, b
+    else:
+      return b, a
   else:
-    return b, a
+    if a.fitness < b.fitness:
+      return a, b
+    else:
+      return b, a
+
+# Make competition between two individuals (for multibjective approach)
+def multi_compete(a, b, maximise=False):
+  pfa, pfb = a.fitness
+  qfa, qfb = b.fitness
+  if maximise:
+    if ((pfa > qfa and pfb > qfb) or (pfa >= qfa and pfb > qfb)
+      or (pfa > qfa and pfb >= qfb)):
+        return a, b
+    else:
+      return b, a
+  else:
+    if ((pfa < qfa and pfb < qfb) or (pfa <= qfa and pfb < qfb)
+      or (pfa < qfa and pfb <= qfb)):
+        return a, b
+    else:
+      return b, a
 
 
 
-def runr(self, hmdata, maximise=True, multi=False):
+def rn_run(self, hmdata, maximise=False, multi=False):
   # Initialize the max number of individuals in a offspring
   offspring_max = self.population_size
   # Initialize best solution
@@ -104,19 +135,31 @@ def runr(self, hmdata, maximise=True, multi=False):
   arrs = []
   #
   # Initialize probability vector
-  prob = rn_generate_prob(len(self.seed_data))
+  model_size = len(self.seed_data)
+  prob = rn_generate_prob(int(model_size * 0.1), model_size)
   #
   # Run `i` generations
   for i in range(self.generations):
     # Create individuals
     for _ in range(offspring_max):
       downward = self.create_individual(prob)
-      downward.fitness = utils.round_up(self.fitness_function(downward.genes))
-      downward.fitness = 0 if ERR >= downward.fitness else downward.fitness
+      if multi:
+        f_a, f_b = self.fitness_function
+        fit_a = utils.round_up(f_a(downward.genes))
+        fit_b = utils.round_up(f_b(downward.genes))
+        fit_a = 0 if ERR >= fit_a else fit_a
+        fit_b = 0 if ERR >= fit_b else fit_b
+        downward.fitness = (fit_a, fit_b)
+      else:
+        downward.fitness = utils.round_up(self.fitness_function(downward.genes))
+        downward.fitness = 0 if ERR >= downward.fitness else downward.fitness
       population.append(downward)
     #
     # Update best individuals population
-    population.sort(key=sort.get_key)
+    if multi:
+      population = sort.nsgaii(population, maximise)
+    else:
+      population.sort(key=sort.get_key, reverse=maximise)
     population = population[:self.population_size]
     elite = population[:k]
     best = population[0]
@@ -140,7 +183,7 @@ def runr(self, hmdata, maximise=True, multi=False):
   self.current_generation.append(best)
   #
   # Update best individuals population
-  population.sort(key=sort.get_key)
+  population.sort(key=sort.get_key, reverse=maximise)
   population = population[:self.population_size]
   #
   # Final Covariance Matrix
@@ -149,11 +192,11 @@ def runr(self, hmdata, maximise=True, multi=False):
 
 
 # Generate probability vector
-def rn_generate_prob(model_size):
+def rn_generate_prob(bound, model_size):
   prob = []
   std_stdev = 1
+  bound += + std_stdev
   for i in range(model_size):
-    bound = model_size + std_stdev
     mean = random.uniform(-bound, bound)
     pair = (mean, std_stdev)
     prob.append(pair)

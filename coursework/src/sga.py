@@ -5,12 +5,36 @@ import sys
 import random
 import numpy as np
 from .ff import ERR
-from . import utils
+from . import sort, utils
+
+
+# Set initial population generation function (fix rank population call)
+def create_first_generation(self, multi=False):
+  self.create_initial_population()
+  self.calculate_population_fitness(self, multi)
+  self.rank_population(self, multi)
+
+# Set next population generation function (fix rank population call)
+def create_next_generation(self, multi=False):
+  self.create_new_population()
+  self.calculate_population_fitness(self, multi)
+  self.rank_population(self, multi)
+
+# Set rank population function (now it uses NSGA-II algorithm)
+def rank_population(self, multi=False):
+  if multi:
+    self.current_generation = sort.nsgaii(self.current_generation,
+      maximise=self.maximise_fitness)
+  else:
+    self.current_generation.sort(key=sort.get_key,
+      reverse=self.maximise_fitness)
+
+
 
 # Run sGA for binary problems
-def runb(self, hmdata, multi=False):
+def bn_run(self, hmdata, multi=False):
   # Create initial population
-  self.create_first_generation()
+  self.create_first_generation(self, multi)
   #
   # Initial Covariance Matrix
   arrs = [np.transpose(i.genes) for i in self.current_generation]
@@ -19,7 +43,7 @@ def runb(self, hmdata, multi=False):
   # Run `i` generations
   for i in range(self.generations):
     # Create next population
-    self.create_next_generation()
+    self.create_next_generation(self, multi)
     #
     # Intermediary
     if i == int(self.generations / 2):
@@ -32,16 +56,30 @@ def runb(self, hmdata, multi=False):
   hmdata['f'] = np.cov(arrs)
 
 
+# Fix population fitness calculation
+def bn_calculate_population_fitness(self, multi=False):
+  if multi:
+    f_a, f_b = self.fitness_function
+    for individual in self.current_generation:
+      fit_a = f_a(individual.genes, self.seed_data)
+      fit_b = f_b(individual.genes, self.seed_data)
+      individual.fitness = (fit_a, fit_b)
+  else:
+    for individual in self.current_generation:
+      fitness = self.fitness_function(individual.genes, self.seed_data)
+      individual.fitness = fitness
+
+
 
 # Run sGA for real numbers problems
-def runr(self, hmdata, multi=False):
+def rn_run(self, hmdata, multi=False):
   # Initialize seed data with random values
   model_size = len(self.seed_data)
   for i in range(model_size):
     self.seed_data[i] = random.uniform(0, model_size)
   #
   # Create initial population
-  self.create_first_generation(self)
+  self.create_first_generation(self, multi)
   #
   # Initial Covariance Matrix
   arrs = [np.transpose(i.genes) for i in self.current_generation]
@@ -50,7 +88,7 @@ def runr(self, hmdata, multi=False):
   # Run `i` generations
   for i in range(self.generations):
     # Create next population
-    self.create_next_generation(self)
+    self.create_next_generation(self, multi)
     #
     # Intermediary
     if i == int(self.generations / 2):
@@ -84,19 +122,22 @@ def rn_mutate_function(individual):
 
 # Fix population fitness calculation
 def rn_calculate_population_fitness(self):
-  for individual in self.current_generation:
-    individual.fitness = self.fitness_function(individual.genes, self.seed_data)
-    individual.fitness = utils.round_up(individual.fitness)
-    individual.fitness = 0 if ERR >= individual.fitness else individual.fitness
-
-# Set initial population generation function (fix rank population call)
-def rn_create_first_generation(self):
-  self.create_initial_population()
-  self.calculate_population_fitness(self)
-  self.rank_population()
-
-# Set next population generation function (fix rank population call)
-def rn_create_next_generation(self):
-  self.create_new_population()
-  self.calculate_population_fitness(self)
-  self.rank_population()
+  if multi:
+    f_a, f_b = self.fitness_function
+    for individual in self.current_generation:
+      # Calculate `a` fitness
+      fit_a = f_a(individual.genes, self.seed_data)
+      fit_a = utils.round_up(fit_a)
+      fit_a = 0 if ERR >= fit_a else fit_a
+      # Calculate `b` fitness
+      fit_b = f_b(individual.genes, self.seed_data)
+      fit_b = utils.round_up(fit_b)
+      fit_b = 0 if ERR >= fit_b else fit_b
+      # Join
+      individual.fitness = (fit_a, fit_b)
+  else:
+    for individual in self.current_generation:
+      fitness = self.fitness_function(individual.genes, self.seed_data)
+      fitness = utils.round_up(fitness)
+      fitness = 0 if ERR >= fitness else fitness
+      individual.fitness = fitness
