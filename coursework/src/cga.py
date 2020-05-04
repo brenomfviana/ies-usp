@@ -7,8 +7,15 @@ import numpy as np
 from .ff import ERR
 from . import sort, utils
 
+def best_individual(self, multi=False):
+  if multi:
+    return [(a.fitness, a.genes) for a in self.current_generation[0]]
+  else:
+    best = self.current_generation[0]
+    return (best.fitness, best.genes)
+
 # Run cGA for binary problems
-def bn_run(self, hmdata, maximise=True, multi=False):
+def bn_run(self, hmdata, multi=False):
   # Initialize probability vector
   prob = [0.5] * len(self.seed_data)
   # Initialize best solution
@@ -35,14 +42,15 @@ def bn_run(self, hmdata, maximise=True, multi=False):
     # Update best individuals population
     population.append(a)
     population.append(b)
-    population.sort(key=sort.get_key, reverse=maximise)
+    population.sort(key=sort.get_key, reverse=self.maximise_fitness)
     population = population[:self.population_size]
     #
     # Get the best and worst individual
     if multi:
-      winner, loser = multi_compete(a, b, maximise)
+      winner, loser = multi_compete(a, b, self.maximise_fitness)
+      population = sort.nsgaii(population, self.maximise_fitness)
     else:
-      winner, loser = mono_compete(a, b, maximise)
+      winner, loser = mono_compete(a, b, self.maximise_fitness)
     # Update best solution
     if best:
       if winner.fitness > best.fitness:
@@ -65,13 +73,20 @@ def bn_run(self, hmdata, maximise=True, multi=False):
     # Update the probability vector based on the success of each bit
     bn_update_prob(winner.genes, loser.genes, prob, self.population_size)
   #
-  # Add final solution
-  self.current_generation.append(best)
-  #
   # Final Covariance Matrix
   arrs = [np.transpose(i.genes) for i in population]
   hmdata['f'] = np.cov(arrs)
-
+  #
+  # Add final solution
+  if multi:
+    indexes = sort.nsgaii_select(population, self.maximise_fitness)
+    nondominated = []
+    for i in indexes:
+      nondominated.append(population[i])
+    self.current_generation.clear()
+    self.current_generation.append(nondominated)
+  else:
+    self.current_generation.append(best)
 
 # Update probability vector (for monobjective approach)
 def bn_update_prob(winner, loser, prob, popsize):
@@ -157,9 +172,9 @@ def rn_run(self, hmdata, maximise=False, multi=False):
     #
     # Update best individuals population
     if multi:
-      population = sort.nsgaii(population, maximise)
+      population = sort.nsgaii(population, self.maximise_fitness)
     else:
-      population.sort(key=sort.get_key, reverse=maximise)
+      population.sort(key=sort.get_key, reverse=self.maximise_fitness)
     population = population[:self.population_size]
     elite = population[:k]
     best = population[0]
@@ -179,16 +194,24 @@ def rn_run(self, hmdata, maximise=False, multi=False):
     # Update the probability vector based on the success of each bit
     rn_update_prob(elite, prob)
   #
-  # Add final solution
-  self.current_generation.append(best)
-  #
   # Update best individuals population
-  population.sort(key=sort.get_key, reverse=maximise)
+  population.sort(key=sort.get_key, reverse=self.maximise_fitness)
   population = population[:self.population_size]
   #
   # Final Covariance Matrix
   arrs = [np.transpose(i.genes) for i in population]
   hmdata['f'] = np.cov(arrs)
+  #
+  # Add final solution
+  if multi:
+    indexes = sort.nsgaii_select(population, self.maximise_fitness)
+    nondominated = []
+    for i in indexes:
+      nondominated.append(population[i])
+    self.current_generation.clear()
+    self.current_generation.append(nondominated)
+  else:
+    self.current_generation.append(best)
 
 
 # Generate probability vector

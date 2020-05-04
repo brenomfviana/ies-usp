@@ -20,6 +20,13 @@ def create_next_generation(self, multi=False):
   self.calculate_population_fitness(self, multi)
   self.rank_population(self, multi)
 
+def best_individual(self, multi=False):
+  if multi:
+    return [(a.fitness, a.genes) for a in self.current_generation[0]]
+  else:
+    best = self.current_generation[0]
+    return (best.fitness, best.genes)
+
 # Set rank population function (now it uses NSGA-II algorithm)
 def rank_population(self, multi=False):
   if multi:
@@ -54,6 +61,19 @@ def bn_run(self, hmdata, multi=False):
   # Final Covariance Matrix
   arrs = [np.transpose(i.genes) for i in self.current_generation]
   hmdata['f'] = np.cov(arrs)
+  #
+  # Add final solution
+  if multi:
+    indexes = sort.nsgaii_select(self.current_generation, self.maximise_fitness)
+    nondominated = []
+    for i in indexes:
+      nondominated.append(self.current_generation[i])
+    self.current_generation.clear()
+    self.current_generation.append(nondominated)
+  else:
+    best = self.current_generation[0]
+    self.current_generation.clear()
+    self.current_generation.append(best)
 
 
 # Fix population fitness calculation
@@ -75,8 +95,9 @@ def bn_calculate_population_fitness(self, multi=False):
 def rn_run(self, hmdata, multi=False):
   # Initialize seed data with random values
   model_size = len(self.seed_data)
+  bound = int(model_size * 0.05)
   for i in range(model_size):
-    self.seed_data[i] = random.uniform(0, model_size)
+    self.seed_data[i] = random.uniform(0, bound)
   #
   # Create initial population
   self.create_first_generation(self, multi)
@@ -99,6 +120,19 @@ def rn_run(self, hmdata, multi=False):
   # Final Covariance Matrix
   arrs = [np.transpose(i.genes) for i in self.current_generation]
   hmdata['f'] = np.cov(arrs)
+  #
+  # Add final solution
+  if multi:
+    indexes = sort.nsgaii_select(self.current_generation, self.maximise_fitness)
+    nondominated = []
+    for i in indexes:
+      nondominated.append(self.current_generation[i])
+    self.current_generation.clear()
+    self.current_generation.append(nondominated)
+  else:
+    best = self.current_generation[0]
+    self.current_generation.clear()
+    self.current_generation.append(best)
 
 
 # Create a new individual
@@ -109,6 +143,9 @@ def rn_create_individual(data):
   individual = []
   for d in data:
     individual.append(random.uniform(d - mrange, d + mrange))
+  mean = np.mean(individual)
+  stdev = np.std(individual, ddof=1)
+  individual = np.random.normal(mean, stdev, mrange).tolist()
   # Return a new individual
   return individual
 
