@@ -241,10 +241,8 @@ def rn_update_prob(elite, prob):
 def rn_create_individual(prob):
   individual = []
   for (mean, stdev) in prob:
-    value = random.uniform(mean - stdev, mean + stdev)
-    individual.append(value)
-  mean = np.mean(individual)
-  stdev = np.std(individual, ddof=1)
-  individual = np.random.normal(mean, stdev, len(individual))
+    # value = random.uniform(mean - stdev, mean + stdev)
+    # individual.append(value)
+    individual.append(np.random.normal(mean, stdev))
   # Return a new individual
   return pyeasyga.Chromosome(individual)
