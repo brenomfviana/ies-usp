@@ -14,7 +14,7 @@ def mono_binary(function, goal_function, size, popsz, noe, maximise=True):
     hmdata = {}
     # Set sGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.create_first_generation = sga.create_first_generation
@@ -40,7 +40,7 @@ def mono_binary(function, goal_function, size, popsz, noe, maximise=True):
     hmdata = {}
     # Set cGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.best_individual = cga.best_individual
@@ -79,7 +79,7 @@ def mono_real(function, goal_function, size, popsz, noe, maximise=False):
     hmdata = {}
     # Set sGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.create_first_generation = sga.create_first_generation
@@ -107,7 +107,7 @@ def mono_real(function, goal_function, size, popsz, noe, maximise=False):
     hmdata = {}
     # Set cGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.best_individual = cga.best_individual
@@ -146,7 +146,7 @@ def multi_binary(function, goal_function, size, popsz, noe, maximise=True):
     hmdata = {}
     # Set sGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.create_first_generation = sga.create_first_generation
@@ -176,7 +176,7 @@ def multi_binary(function, goal_function, size, popsz, noe, maximise=True):
     hmdata = {}
     # Set cGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.best_individual = cga.best_individual
@@ -225,7 +225,7 @@ def multi_real(function, goal_function, size, popsz, noe, maximise=False):
     hmdata = {}
     # Set sGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.create_first_generation = sga.create_first_generation
@@ -257,7 +257,7 @@ def multi_real(function, goal_function, size, popsz, noe, maximise=False):
     hmdata = {}
     # Set cGA
     ga = pyeasyga.GeneticAlgorithm(data, population_size=popsz,
-      maximise_fitness=maximise, generations=10)
+      maximise_fitness=maximise, generations=200)
     ga.fitness_function = function
     # Update default functions
     ga.best_individual = cga.best_individual
