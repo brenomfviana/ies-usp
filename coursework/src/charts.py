@@ -3,7 +3,8 @@ This module contains function to plot chats.
 """
 import os
 import sys
-from pygmo import *
+import math
+import numpy as np
 import matplotlib as mpl
 import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
@@ -43,17 +44,23 @@ def results(results_sga, results_cga, population_size, goal, noe, filename):
     cga_accuracy += 1 if f == goal else 0
   cga_accuracy /= noe
   # Plot
-  fig = plt.figure()
-  fig.suptitle('População de ' + str(population_size) + ' indivíduos',
-     fontsize=12, fontweight='bold')
-  line_sga, = plt.plot(results_sga)
-  line_cga, = plt.plot(results_cga, linestyle='--')
+  fig, axes = plt.subplots(figsize=(12.8, 4.8))
+  # fig.suptitle('População de ' + str(population_size) + ' indivíduos',
+  #    fontsize=12, fontweight='bold')
+  plot_sga = [a for a in enumerate(results_sga, 1)]
+  plot_cga = [a for a in enumerate(results_cga, 1)]
+  line_sga, = plt.plot(*zip(*plot_sga))
+  line_cga, = plt.plot(*zip(*plot_cga), linestyle='--')
+  plt.xlim(1, noe)
   plt.ylim(0, max(max(results_sga) * 1.2, max(results_cga) * 1.2, goal * 1.2))
+  nexe = np.arange(0, noe + 1, 5)
+  plt.xticks(nexe)
   plt.legend([line_sga, line_cga],
     ['sGA ({:.2f}%)'.format(sga_accuracy * 100),
      'cGA ({:.2f}%)'.format(cga_accuracy * 100)])
   plt.xlabel('Execuções')
   plt.ylabel('Fitness')
+  fig.tight_layout()
   plt.savefig(RESULT_PATH + '/' + filename + '.png')
   plt.close('all')
 
@@ -80,47 +87,53 @@ def heat_map(hmsga, hmcga, filename, i):
   # sGA
   # Initial population heat map
   fig, axis = plt.subplots(figsize=(6.4, 4.8))
-  fig.suptitle('sGA\nMatriz de Covariância da População Inicial',
-    fontsize=12, fontweight='bold')
+  # fig.suptitle('sGA\nMatriz de Covariância da População Inicial',
+  #   fontsize=12, fontweight='bold')
   heatmap = axis.pcolor(hmsga['i'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Blues)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
+  fig.tight_layout()
   plt.savefig(foldername + '/' + str(i) + '_sga_a' + '.png')
   # Intermediary population heat map
   fig, axis = plt.subplots(figsize=(6.4, 4.8))
-  fig.suptitle('sGA\nMatriz de Covariância da População Intermediária',
-    fontsize=12, fontweight='bold')
+  # fig.suptitle('sGA\nMatriz de Covariância da População Intermediária',
+  #   fontsize=12, fontweight='bold')
   heatmap = axis.pcolor(hmsga['t'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Blues)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
+  fig.tight_layout()
   plt.savefig(foldername + '/' + str(i) + '_sga_b' + '.png')
   # Final population heat map
   fig, axis = plt.subplots(figsize=(6.4, 4.8))
-  fig.suptitle('sGA\nMatriz de Covariância da População Final',
-    fontsize=12, fontweight='bold')
+  # fig.suptitle('sGA\nMatriz de Covariância da População Final',
+  #   fontsize=12, fontweight='bold')
   heatmap = axis.pcolor(hmsga['f'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Blues)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
+  fig.tight_layout()
   plt.savefig(foldername + '/' + str(i) + '_sga_c' + '.png')
   #
   # cGA
   # Initial population heat map
   fig, axis = plt.subplots(figsize=(6.4, 4.8))
-  fig.suptitle('cGA\nMatriz de Covariância da População Inicial',
-    fontsize=12, fontweight='bold')
+  # fig.suptitle('cGA\nMatriz de Covariância da População Inicial',
+  #   fontsize=12, fontweight='bold')
   heatmap = axis.pcolor(hmcga['i'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Reds)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
+  fig.tight_layout()
   plt.savefig(foldername + '/' + str(i) + '_cga_a' + '.png')
   # Intermediary population heat map
   fig, axis = plt.subplots(figsize=(6.4, 4.8))
-  fig.suptitle('cGA\nMatriz de Covariância da População Intermediária',
-    fontsize=12, fontweight='bold')
+  # fig.suptitle('cGA\nMatriz de Covariância da População Intermediária',
+  #   fontsize=12, fontweight='bold')
   heatmap = axis.pcolor(hmcga['t'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Reds)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
+  fig.tight_layout()
   plt.savefig(foldername + '/' + str(i) + '_cga_b' + '.png')
   # Final population heat map
   fig, axis = plt.subplots(figsize=(6.4, 4.8))
-  fig.suptitle('cGA\nMatriz de Covariância da População Final',
-    fontsize=12, fontweight='bold')
+  # fig.suptitle('cGA\nMatriz de Covariância da População Final',
+  #   fontsize=12, fontweight='bold')
   heatmap = axis.pcolor(hmcga['f'], vmin=hmmin, vmax=hmmax, cmap=plt.cm.Reds)
   plt.colorbar(heatmap, format=ticker.FuncFormatter(_fmt))
+  fig.tight_layout()
   plt.savefig(foldername + '/' + str(i) + '_cga_c' + '.png')
   plt.close('all')
 
@@ -131,7 +144,7 @@ def hypervolume(nondominated_sga, nondominated_cga, goal, maximise,
     _create_folders()
     # sGA
     fig, axes = plt.subplots()
-    fig.suptitle('sGA\nHipervolume', fontsize=12, fontweight='bold')
+    # fig.suptitle('sGA\nHipervolume', fontsize=12, fontweight='bold')
     x, y = goal
     # Get values
     obj1 = [a for a, _ in nondominated_sga]
@@ -150,11 +163,13 @@ def hypervolume(nondominated_sga, nondominated_cga, goal, maximise,
         rect = plt.Rectangle((x, y), obj1[k], obj2[k], fill=True, linewidth=0,
           facecolor='#8cb7d0')
         plt.gca().add_patch(rect)
-      plt.xlim(0, max(int(max(obj1) * 1.2), 1))
-      plt.ylim(0, max(int(max(obj2) * 1.2), 1))
+      plt.xlim(0, max(math.ceil(max(obj1) * 1.2), 1))
+      plt.ylim(0, max(math.ceil(max(obj2) * 1.2), 1))
     # Print solutions
     axes.scatter(obj1, obj2, color='blue', zorder = 2, clip_on=False)
     axes.scatter(x, y, zorder = 2, color='black', clip_on=False)
+    plt.xlabel('$f_1(x)$')
+    plt.ylabel('$f_2(x)$')
     # Save
     foldername = HYPERVOLUME_PATH + '/' + filename
     if not os.path.isdir(foldername):
@@ -164,7 +179,7 @@ def hypervolume(nondominated_sga, nondominated_cga, goal, maximise,
     #
     # cGA
     fig, axes = plt.subplots()
-    fig.suptitle('cGA\nHipervolume', fontsize=12, fontweight='bold')
+    # fig.suptitle('cGA\nHipervolume', fontsize=12, fontweight='bold')
     x, y = goal
     # Get values
     obj1 = [a for a, _ in nondominated_cga]
@@ -183,11 +198,13 @@ def hypervolume(nondominated_sga, nondominated_cga, goal, maximise,
         rect = plt.Rectangle((x, y), obj1[k], obj2[k], fill=True, linewidth=0,
           facecolor='#e28c7f')
         plt.gca().add_patch(rect)
-      plt.xlim(0, max(int(max(obj1) * 1.2), 1))
-      plt.ylim(0, max(int(max(obj2) * 1.2), 1))
+      plt.xlim(0, max(math.ceil(max(obj1) * 1.2), 1))
+      plt.ylim(0, max(math.ceil(max(obj2) * 1.2), 1))
     # Print solutions
     axes.scatter(obj1, obj2, zorder = 2, clip_on=False)
     axes.scatter(x, y, zorder = 2, color='black', clip_on=False)
+    plt.xlabel('$f_1(x)$')
+    plt.ylabel('$f_2(x)$')
     # Save
     foldername = HYPERVOLUME_PATH + '/' + filename
     if not os.path.isdir(foldername):
