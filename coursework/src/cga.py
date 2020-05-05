@@ -12,7 +12,7 @@ def best_individual(self, multi=False):
     return [(a.fitness, a.genes) for a in self.current_generation[0]]
   else:
     best = self.current_generation[0]
-    return (best.fitness, best.genes)
+    return [best.fitness, best.genes]
 
 # Run cGA for binary problems
 def bn_run(self, hmdata, multi=False):

@@ -25,7 +25,7 @@ def best_individual(self, multi=False):
     return [(a.fitness, a.genes) for a in self.current_generation[0]]
   else:
     best = self.current_generation[0]
-    return (best.fitness, best.genes)
+    return [best.fitness, best.genes]
 
 # Set rank population function (now it uses NSGA-II algorithm)
 def rank_population(self, multi=False):

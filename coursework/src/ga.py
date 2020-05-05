@@ -138,8 +138,7 @@ def multi_binary(function, goal_function, size, popsz, noe, maximise=True):
   data = [0] * size
   #
   # Save the fitness of each execution
-  results_sga_fit_a = []
-  results_sga_fit_b = []
+  results_sga = []
   hmdatas_sga = []
   # Execute the sGA `noe` times (noe: number of executions)
   for _ in range(noe):
@@ -160,18 +159,16 @@ def multi_binary(function, goal_function, size, popsz, noe, maximise=True):
     ga.run(ga, hmdata, multi=True)
     # Get best individual
     nondominated = ga.best_individual(ga, multi=True)
+    nddata = []
     for nd in nondominated:
-      fitness, _ = nd
-      fit_a, fit_b = fitness
       # Update extraction variables
-      results_sga_fit_a.append(fit_a)
-      results_sga_fit_b.append(fit_b)
-      print('bin', 'sga', fit_a, fit_b)
+      fitness, _ = nd
+      nddata.append(fitness)
+    results_sga.append(nddata)
     hmdatas_sga.append(hmdata)
   #
   # Save the fitness of each execution
-  results_cga_fit_a = []
-  results_cga_fit_b = []
+  results_cga = []
   hmdatas_cga = []
   # Execute the cGA `noe` times (noe: number of executions)
   for _ in range(noe):
@@ -189,23 +186,25 @@ def multi_binary(function, goal_function, size, popsz, noe, maximise=True):
     ga.run(ga, hmdata, multi=True)
     # Get best individual
     nondominated = ga.best_individual(ga, multi=True)
+    nddata = []
     for nd in nondominated:
-      fitness, _ = nd
-      fit_a, fit_b = fitness
       # Update extraction variables
-      results_cga_fit_a.append(fit_a)
-      results_cga_fit_b.append(fit_b)
-      print('bin', 'cga', fit_a, fit_b)
+      fitness, _ = nd
+      nddata.append(fitness)
+    results_cga.append(nddata)
     hmdatas_cga.append(hmdata)
   #
   # Get goal of the fitness function
   fa_goal, fb_goal = goal_function
-  goal_a, goal_b = fa_goal(data), fb_goal(data)
+  goal = fa_goal(data), fb_goal(data)
   #
   # Plot hypervolume charts
   fa, fb = function
   fname = fa.__name__ + '_' + fb.__name__ + '_'
   filename = fname + str(size) + '_' + str(popsz)
+  for i, _ in enumerate(results_sga):
+    charts.hypervolume(results_sga[i], results_cga[i], goal,
+      True, filename, i + 1)
   #
   # # Plot heat map charts
   # for i, _ in enumerate(hmdatas_sga):
@@ -218,8 +217,7 @@ def multi_real(function, goal_function, size, popsz, noe, maximise=False):
   data = [0] * size
   #
   # Save the fitness of each execution
-  results_sga_fit_a = []
-  results_sga_fit_b = []
+  results_sga = []
   hmdatas_sga = []
   # Execute the sGA `noe` times (noe: number of executions)
   for _ in range(noe):
@@ -242,18 +240,16 @@ def multi_real(function, goal_function, size, popsz, noe, maximise=False):
     ga.run(ga, hmdata, multi=True)
     # Get best individual
     nondominated = ga.best_individual(ga, multi=True)
+    nddata = []
     for nd in nondominated:
-      fitness, _ = nd
-      fit_a, fit_b = fitness
       # Update extraction variables
-      results_sga_fit_a.append(fit_a)
-      results_sga_fit_b.append(fit_b)
-      print('real', 'sga', fit_a, fit_b)
+      fitness, _ = nd
+      nddata.append(fitness)
+    results_sga.append(nddata)
     hmdatas_sga.append(hmdata)
   #
   # Save the fitness of each execution
-  results_cga_fit_a = []
-  results_cga_fit_b = []
+  results_cga = []
   hmdatas_cga = []
   # Execute the cGA `noe` times (noe: number of executions)
   for _ in range(noe):
@@ -271,23 +267,25 @@ def multi_real(function, goal_function, size, popsz, noe, maximise=False):
     ga.run(ga, hmdata, multi=True)
     # Get best individual
     nondominated = ga.best_individual(ga, multi=True)
+    nddata = []
     for nd in nondominated:
-      fitness, _ = nd
-      fit_a, fit_b = fitness
       # Update extraction variables
-      results_cga_fit_a.append(fit_a)
-      results_cga_fit_b.append(fit_b)
-      print('real', 'cga', fit_a, fit_b)
+      fitness, _ = nd
+      nddata.append(fitness)
+    results_cga.append(nddata)
     hmdatas_cga.append(hmdata)
   #
   # Get goal of the fitness function
   fa_goal, fb_goal = goal_function
-  goal_a, goal_b = fa_goal(data), fb_goal(data)
+  goal = fa_goal(data), fb_goal(data)
   #
   # Plot hypervolume charts
   fa, fb = function
   fname = fa.__name__ + '_' + fb.__name__ + '_'
   filename = fname + str(size) + '_' + str(popsz)
+  for i, _ in enumerate(results_sga):
+    charts.hypervolume(results_sga[i], results_cga[i], goal,
+      False, filename, i + 1)
   #
   # # Plot heat map charts
   # for i, _ in enumerate(hmdatas_sga):
