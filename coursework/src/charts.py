@@ -50,7 +50,7 @@ def results(results_sga, results_cga, population_size, goal, noe, filename):
   plot_sga = [a for a in enumerate(results_sga, 1)]
   plot_cga = [a for a in enumerate(results_cga, 1)]
   line_sga, = plt.plot(*zip(*plot_sga))
-  line_cga, = plt.plot(*zip(*plot_cga), linestyle='--')
+  line_cga, = plt.plot(*zip(*plot_cga), linestyle=':', color='blue', alpha=0.5)
   plt.xlim(1, noe)
   plt.ylim(0, max(max(results_sga) * 1.2, max(results_cga) * 1.2, goal * 1.2))
   nexe = np.arange(0, noe + 1, 5)
@@ -62,6 +62,25 @@ def results(results_sga, results_cga, population_size, goal, noe, filename):
   plt.ylabel('Fitness')
   fig.tight_layout()
   plt.savefig(RESULT_PATH + '/' + filename + '.png')
+  plt.close('all')
+  #
+  fig, axes = plt.subplots(figsize=(8, 16))
+  axes.axis('off')
+  axes.axis('tight')
+  fig.patch.set_visible(False)
+  columns = ('sGA', 'cGA')
+  rows = [i for i, a in enumerate(results_sga, 1)]
+  content = []
+  for i, _ in enumerate(results_sga):
+    content.append((results_sga[i], results_cga[i]))
+  table = axes.table(cellText=content, colLabels=columns,
+    rowLabels=rows, loc='center')
+  fig.tight_layout()
+  # Sava
+  foldername = RESULT_PATH + '/' + 'tables'
+  if not os.path.isdir(foldername):
+    os.mkdir(foldername)
+  plt.savefig(foldername + '/' + filename + '.png')
   plt.close('all')
 
 

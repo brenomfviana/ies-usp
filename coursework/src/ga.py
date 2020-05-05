@@ -60,9 +60,9 @@ def mono_binary(function, goal_function, size, popsz, noe, maximise=True):
   # Plot result charts
   filename = function.__name__ + '_' + str(size) + '_' + str(popsz)
   charts.results(results_sga, results_cga, popsz, goal, noe, filename)
-  # # Plot heat map charts
-  # for i, _ in enumerate(hmdatas_sga):
-  #   charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
+  # Plot heat map charts
+  for i, _ in enumerate(hmdatas_sga):
+    charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
 
 
 
@@ -127,9 +127,9 @@ def mono_real(function, goal_function, size, popsz, noe, maximise=False):
   # Plot result charts
   filename = function.__name__ + '_' + str(size) + '_' + str(popsz)
   charts.results(results_sga, results_cga, popsz, goal, noe, filename)
-  # # Plot heat map charts
-  # for i, _ in enumerate(hmdatas_sga):
-  #   charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
+  # Plot heat map charts
+  for i, _ in enumerate(hmdatas_sga):
+    charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
 
 
 
@@ -206,9 +206,9 @@ def multi_binary(function, goal_function, size, popsz, noe, maximise=True):
     charts.hypervolume(results_sga[i], results_cga[i], goal,
       True, filename, i + 1)
   #
-  # # Plot heat map charts
-  # for i, _ in enumerate(hmdatas_sga):
-  #   charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
+  # Plot heat map charts
+  for i, _ in enumerate(hmdatas_sga):
+    charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
 
 
 
@@ -287,6 +287,6 @@ def multi_real(function, goal_function, size, popsz, noe, maximise=False):
     charts.hypervolume(results_sga[i], results_cga[i], goal,
       False, filename, i + 1)
   #
-  # # Plot heat map charts
-  # for i, _ in enumerate(hmdatas_sga):
-  #   charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)
+  # Plot heat map charts
+  for i, _ in enumerate(hmdatas_sga):
+    charts.heat_map(hmdatas_sga[i], hmdatas_cga[i], filename, i + 1)

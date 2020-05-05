@@ -2,14 +2,14 @@
 import os
 
 # Number of executions
-NOE = 10
+NOE = 100
 
 # Problems
 problems = [
   # Binary
-  # 'onemax', 'trap5', 'invtrap5',
+  'onemax', 'trap5', 'invtrap5',
   # Real
-  # 'sphere', 'rosen',
+  'sphere', 'rosen',
   # Multi binary
   'multibi',
   # Multi real
@@ -17,10 +17,10 @@ problems = [
 ]
 
 # Problem sizes
-problem_sizes = [10, 20, ]# 40, 80, 160]
+problem_sizes = [10, 20, 40, 80, 160]
 
 # Population sizes
-population_sizes = [10, 20, ]# 40, 80, 160]
+population_sizes = [10, 20, 40, 80, 160]
 
 # Run algorithms
 for posz in population_sizes:

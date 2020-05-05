@@ -95,9 +95,9 @@ def bn_calculate_population_fitness(self, multi=False):
 def rn_run(self, hmdata, multi=False):
   # Initialize seed data with random values
   model_size = len(self.seed_data)
-  bound = int(model_size * 0.05)
+  bound = max(int(model_size * 0.05), 5)
   for i in range(model_size):
-    self.seed_data[i] = random.uniform(0, bound)
+    self.seed_data[i] = random.uniform(-bound, bound)
   #
   # Create initial population
   self.create_first_generation(self, multi)
@@ -138,24 +138,20 @@ def rn_run(self, hmdata, multi=False):
 # Create a new individual
 def rn_create_individual(data):
   # Set mutation range
-  mrange = len(data)
+  mrange = int(len(data) * 0.2)
   # Generate a random individual
   individual = []
-  for d in data:
-    individual.append(random.uniform(d - mrange, d + mrange))
-  mean = np.mean(individual)
-  stdev = np.std(individual, ddof=1)
-  individual = np.random.normal(mean, stdev, mrange).tolist()
-  # Return a new individual
+  for gene in data:
+    individual.append(np.random.normal(gene, mrange))
   return individual
 
 # Fix mutate function
 def rn_mutate_function(individual):
   # Set mutation range
-  mrange = max(individual)
+  mut = max([abs(i) for i in individual])
   mutate_index = random.randrange(len(individual))
-  d = individual[mutate_index]
-  individual[mutate_index] = random.uniform(d - mrange, d + mrange)
+  gene = individual[mutate_index]
+  individual[mutate_index] = np.random.normal(gene, mut)
 
 # Fix population fitness calculation
 def rn_calculate_population_fitness(self, multi=False):
