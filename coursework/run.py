@@ -7,9 +7,12 @@ NOE = 100
 # Problems
 problems = [
   # Binary
-  'onemax', 'trap5', 'invtrap5',
+  'onemax',
+  'trap5',
+  'invtrap5',
   # Real
-  'sphere', 'rosen',
+  'sphere',
+  'rosen',
   # Multi binary
   'multibi',
   # Multi real
